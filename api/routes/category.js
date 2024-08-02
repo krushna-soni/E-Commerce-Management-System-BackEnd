@@ -29,7 +29,8 @@ router.get('/', checkAuth, (req, res, next) => {
 });
 
 // Save a new category
-router.post('/', checkAuth, (req, res, next) => {
+router.post('/add-category', checkAuth, (req, res, next) => {
+  console.log('POST request received at /category/add-category')
   if (!req.files || !req.files.photo) {
     console.error('No photo file uploaded');
     return res.status(400).json({ error: 'No photo file uploaded' });
@@ -39,7 +40,6 @@ router.post('/', checkAuth, (req, res, next) => {
 
   cloudinary.uploader.upload(file.tempFilePath, (err, result) => {
     if (err || !result) {
-      console.error('Cloudinary upload error:', err);
       return res.status(500).json({ error: 'Failed to upload image to Cloudinary' });
     }
 
@@ -97,21 +97,25 @@ router.put('/:id', checkAuth, (req, res, next) => {
       return res.status(500).json({ error: 'Failed to upload image to Cloudinary' });
     }
 
-    Category.findOneAndUpdate({ _id: req.params.id }, {
-      $set: {
-        name: req.body.name,
-        photo: result.url
-      }
-    }, { new: true })
-      .then(updatedCategory => {
+    Category.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          name: req.body.name,
+          photo: result.url,
+        },
+      },
+      { new: true, useFindAndModify: false } // Add useFindAndModify: false here
+    )
+      .then((updatedCategory) => {
         res.status(200).json({
-          updated_category: updatedCategory
+          updated_category: updatedCategory,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         res.status(500).json({
-          error: err
+          error: err,
         });
       });
   });
