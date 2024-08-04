@@ -9,7 +9,7 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://krushna1234:krushna1234@krushna.fyhx0dp.mongodb.net/?retryWrites=true&w=majority&appName=Krushna', {
+mongoose.connect( process.env.MONGOURL , {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
