@@ -5,10 +5,11 @@ const Category = require('../model/category');
 const cloudinary = require('cloudinary').v2;
 const checkAuth = require('../middleware/check-auth');
 
+// Configure Cloudinary using environment variables
 cloudinary.config({
-  cloud_name: 'doo3cv1pd',
-  api_key: '353146128953761',
-  api_secret: 'UZQOExdwlwicK0WyVrS3VA_Jrww'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // Get all categories
@@ -17,20 +18,20 @@ router.get('/', checkAuth, (req, res, next) => {
     .select('_id name photo')
     .then(result => {
       res.status(200).json({
-        category: result
+        category: result,
       });
     })
     .catch(err => {
       console.log(err);
       res.status(500).json({
-        error: err
+        error: err,
       });
     });
 });
 
 // Save a new category
 router.post('/add-category', checkAuth, (req, res, next) => {
-  console.log('POST request received at /category/add-category')
+  console.log('POST request received at /category/add-category');
   if (!req.files || !req.files.photo) {
     console.error('No photo file uploaded');
     return res.status(400).json({ error: 'No photo file uploaded' });
@@ -52,13 +53,13 @@ router.post('/add-category', checkAuth, (req, res, next) => {
     category.save()
       .then(savedResult => {
         res.status(200).json({
-          new_category: savedResult
+          new_category: savedResult,
         });
       })
       .catch(err => {
         console.error('Error saving category:', err);
         res.status(500).json({
-          error: 'Failed to save category'
+          error: 'Failed to save category',
         });
       });
   });
@@ -80,7 +81,6 @@ router.get('/:id', checkAuth, (req, res, next) => {
       res.status(500).json({ error: err });
     });
 });
-
 
 // Update a category
 router.put('/:id', checkAuth, (req, res, next) => {
@@ -105,14 +105,14 @@ router.put('/:id', checkAuth, (req, res, next) => {
           photo: result.url,
         },
       },
-      { new: true, useFindAndModify: false } // Add useFindAndModify: false here
+      { new: true, useFindAndModify: false }
     )
-      .then((updatedCategory) => {
+      .then(updatedCategory => {
         res.status(200).json({
           updated_category: updatedCategory,
         });
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
         res.status(500).json({
           error: err,
@@ -139,13 +139,13 @@ router.delete('/', checkAuth, (req, res, next) => {
       });
       res.status(200).json({
         message: 'Category deleted successfully',
-        result: result
+        result: result,
       });
     })
     .catch(err => {
       console.log(err);
       res.status(500).json({
-        error: err
+        error: err,
       });
     });
 });
